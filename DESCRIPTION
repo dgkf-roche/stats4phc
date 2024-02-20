@@ -1,0 +1,51 @@
+Package: stats4phc
+Title: Performance evaluation for the prognostic value of predictive models intended to support 
+  personalized healthcare through predictiveness curves and positive / negative predictive values
+Version: 0.1
+Authors@R: c(
+    person("Ondrej", "Slama", email = "ondrej.slama@roche.com", role = c("aut", "cre")),
+    person("Darrick", "Shen", email = "shend9@gene.com", role = "aut"),
+    person("Verena", "Steffen", email = "steffen.verena@gene.com", role = "aut"),
+    person("Michel", "Friesenhahn", email = "friesem1@gene.com", role = "aut"),
+    person("Christina", "Rabe", email = "rabec@gene.com", role = "aut"),
+    person("F. Hoffmann-La Roche AG", role = c("cph", "fnd"))
+  )
+Description: Performance evaluation for the prognostic value of predictive models intended to 
+  support personalized healthcare (phc) when the outcomes of interest are binary. 
+  Predictiveness curves are an insightful visualization to assess the inherent ability of such 
+  models to provide predictions to individual patients. Cumulative versions of predictiveness 
+  curves represent positive predictive values and 1 - negative predictive values and are also 
+  informative if the eventual goal is to use a cutoff for clinical decision making. 
+  In addition, predictiveness curves and their cumulative versions are naturally related to net 
+  benefit performance metrics to assess clinical utility for phc. Finally, some authors have 
+  proposed a visualization that assesses both the prognostic value of predictive models and 
+  their performance as a classifier. This package provides a variety of functions for estimation 
+  and plotting of these performance evaluation curves and metrics.
+License: Apache License (>= 2.0) 
+Depends:
+  R (>= 4.1.0)
+Imports: 
+  cgam (>= 1.20),
+  checkmate (>= 2.1.0),
+  dplyr (>= 1.1.0), 
+  ggExtra (>= 0.10.0),
+  ggplot2 (>= 3.4.1),
+  Hmisc (>= 4.8.0),
+  isotone (>= 1.1.0),
+  mgcv (>= 1.8.41),
+  pracma (>= 2.4.2),
+  tidyr (>= 1.3.0),
+  yardstick (>= 1.1.0)
+Suggests: 
+  knitr,
+  rmarkdown,
+  testthat (>= 3.0.0)
+Encoding: UTF-8
+Language: en-US
+LazyData: true
+RoxygenNote: 7.2.3
+Roxygen: list(markdown = TRUE)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+
+

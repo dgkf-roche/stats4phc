@@ -1,5 +1,10 @@
 # stats4phc <img src="man/figures/logo.png" align="right" width="260px" height="300px" />
 
+<!-- start badges -->
+[![Check 🛠](https://github.com/genentech/stats4phc/actions/workflows/check.yaml/badge.svg)](https://genentech.github.io/stats4phc/main/unit-test-report/)
+[![Docs 📚](https://github.com/genentech/stats4phc/actions/workflows/docs.yaml/badge.svg)](https://genentech.github.io/stats4phc/)
+[![Code Coverage 📔](https://raw.githubusercontent.com/genentech/stats4phc/_xml_coverage_reports/data/main/badge.svg)](https://genentech.github.io/stats4phc/main/coverage-report/)
+<!-- end badges -->
 
 Performance evaluation for the prognostic value of predictive models intended to 
 support personalized healthcare (phc) when the outcomes of interest are binary. 

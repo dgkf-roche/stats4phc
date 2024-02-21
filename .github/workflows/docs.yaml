@@ -6,13 +6,11 @@ on:
     branches:
       - main
     paths:
-      - "inst/templates/**"
       - "_pkgdown.*"
       - DESCRIPTION
       - "**.md"
       - "**.Rmd"
       - "man/**"
-      - "LICENSE.*"
       - NAMESPACE
   pull_request:
     types:
@@ -23,13 +21,11 @@ on:
     branches:
       - main
     paths:
-      - "inst/templates/**"
       - "_pkgdown.*"
       - DESCRIPTION
       - "**.md"
       - "**.Rmd"
       - "man/**"
-      - "LICENSE.*"
       - NAMESPACE
   workflow_dispatch:
 

@@ -95,7 +95,7 @@ To briefly highlight the functionalities:
 
 # Calibration
 
-Calibration is the assessment of systematic bias in a score. Visually, when plotting score on the x-axis vs. outcomes on the y-axis, the model is calibrated if points are centered around the identity line. If it is not the case, we talk about miscalibration (see [reference](https://schiffmc.pages.roche.com/stats4datascience/posts/three_metrics/#calibration)). By improving calibration, one can improve the performance of the model.
+Calibration is the assessment of systematic bias in a score. Visually, when plotting score on the x-axis vs. outcomes on the y-axis, the model is calibrated if points are centered around the identity line. If it is not the case, we talk about miscalibration. By improving calibration, one can improve the performance of the model.
 
 You can use `calibrationProfile` function to visualize and assess calibration.
 

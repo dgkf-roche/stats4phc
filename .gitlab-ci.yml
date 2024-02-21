@@ -1,15 +1,7 @@
 stages:
+  - setup
   - build
   - deploy
-
-
-# Rules
-
-.rule-is-head: &rule-is-head
-  - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
-    when: never
-
-
 
 # Templates
 
@@ -48,6 +40,33 @@ stages:
     key: ${CI_COMMIT_REF_SLUG}
     paths:
       - .gitlab-cache/user-library
+      
+Cache Dependencies:
+  stage: setup
+  extends: 
+    - .r-environment
+    - .cached-user-library
+  script:
+    # clear any existing installation inherited from previous runs on branch
+    - rm -rf .gitlab-cache/user-library
+    - mkdir -p .gitlab-cache/user-library
+    - R -e 'if (!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")'
+        -e 'CI_initial <- Sys.getenv("CI")'
+        -e 'success <- FALSE'
+        -e 'for (i in seq_len(n <- 3L)) {'
+        -e '  if (i > 1L) message("Retrying with `Sys.setenv(CI=\"\")` (used by `remotes::install_github`)")'
+        -e '  if (i > 1L) message(sprintf("Attempting to install dependencies (attempt %s of %s)", i, n))'
+        -e '  if (success <- !inherits(try(remotes::install_deps(dependencies = TRUE, git = "external")), "try-error")) break'
+        -e '  Sys.setenv(CI = "")'
+        -e '}'
+        -e 'if (!success) { message("Failed to install dependencies."); quit("no", 1L) }'
+        -e 'Sys.setenv(CI = CI_initial)'
+        -e 'remotes::install_local(dependencies = FALSE)'
+        -e 'inst <- as.data.frame(installed.packages()[,c("Package", "Version", "LibPath")], row.names = FALSE)'
+        -e 'inst$LibPath <- gsub(paste0("^\\Q", Sys.getenv("R_HOME"), "\\E"), "$R_HOME", inst$LibPath, perl = TRUE)'
+        -e 'inst$LibPath <- gsub(paste0("^\\Q", getwd(), "\\E"), ".", inst$LibPath, perl = TRUE)'
+        -e 'inst'
+
 
 
 build-package:
@@ -71,9 +90,6 @@ OCEAN RSPM Deploy:
   needs: ["build-package"]
   image: "${image_address}"
   stage: deploy
-  rules:
-    - *rule-is-head
-    - when: always
   script:
     - |
       PKG_NAME=$(grep "Package:" DESCRIPTION | awk -F ": " '{print $NF}')

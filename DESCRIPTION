@@ -21,6 +21,7 @@ Description: Performance evaluation for the prognostic value of predictive model
   proposed a visualization that assesses both the prognostic value of predictive models and 
   their performance as a classifier. This package provides a variety of functions for estimation 
   and plotting of these performance evaluation curves and metrics.
+URL: https://genentech.github.io/stats4phc
 License: Apache License (>= 2.0) 
 Depends:
   R (>= 4.1.0)

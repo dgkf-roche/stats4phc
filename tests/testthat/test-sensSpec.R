@@ -20,19 +20,17 @@ test_that("sensSpec can order scores", {
 })
 
 test_that("sensSpec works", {
+  
   res2 <- sensSpec(outcome = outcome, score = rscore, rev.order = T, plot.raw = F)
-  expect_snapshot(as.data.frame(res2$data))
-
   res3 <- sensSpec(outcome = outcome, score = rscore, rev.order = F, plot.raw = F)
-  expect_snapshot(as.data.frame(res3$data))
-
   res4 <- sensSpec(outcome = outcome, score = rscore, rev.order = F, plot.raw = T)
-  expect_snapshot(as.data.frame(res4$data))
-
   res5 <- sensSpec(outcome = outcome, score = rscore, rev.order = T, plot.raw = T)
-  expect_snapshot(as.data.frame(res5$data))
-
   res6 <- sensSpec(outcome = outcome, score = rscore, methods = c("asis", "gam", "pava"))
+  
+  expect_snapshot(as.data.frame(res2$data))
+  expect_snapshot(as.data.frame(res3$data))
+  expect_snapshot(as.data.frame(res4$data))
+  expect_snapshot(as.data.frame(res5$data))
   expect_snapshot(as.data.frame(res6$data))
 
   # expect_snapshot_file(save_png(res2$plot), "sensSpec2.png")

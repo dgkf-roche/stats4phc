@@ -318,10 +318,10 @@ add0thPercPV <- function(x) {
 #' expect_snapshot_file(save_png(ggplot(mtcars) +
 #'   geom_point(aes(hp, mpg))), "riskProfile.png")
 #'
-save_png <- function(code, width = 400, height = 400) {
+save_png <- function(code, width = 400, height = 400) { # nocov start
   path <- tempfile(fileext = ".png")
   png(path, width = width, height = height)
   on.exit(dev.off())
   print(code)
   return(path)
-}
+} # nocov end

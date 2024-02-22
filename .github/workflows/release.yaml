@@ -8,15 +8,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build package 🎁
-    needs: release
-    uses: insightsengineering/r.pkg.template/.github/workflows/build-check-install.yaml@main
-    secrets:
-      REPO_GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
-    with:
-      skip-r-cmd-check: true
-      skip-r-cmd-install: true
+  # build:
+  #   name: Build package 🎁
+  #   needs: release
+  #   uses: insightsengineering/r.pkg.template/.github/workflows/build-check-install.yaml@main
+  #   secrets:
+  #     REPO_GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
+  #   with:
+  #     skip-r-cmd-check: true
+  #     skip-r-cmd-install: true
   docs:
     name: Pkgdown Docs 📚
     needs: release
@@ -30,14 +30,26 @@ jobs:
     uses: insightsengineering/r.pkg.template/.github/workflows/release.yaml@main
     secrets:
       REPO_GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
-  # r-cmd:
-  #   name: R CMD Check 🧬
-  #   needs: [release, docs]
-  #   uses: insightsengineering/r.pkg.template/.github/workflows/build-check-install.yaml@main
-  #   secrets:
-  #     REPO_GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
-  #   with:
-  #     additional-r-cmd-check-params: --as-cran
+  r-cmd:
+    name: R CMD Check 🧬
+    needs: [release, docs]
+    uses: insightsengineering/r.pkg.template/.github/workflows/build-check-install.yaml@main
+    secrets:
+      REPO_GITHUB_TOKEN: ${{ secrets.REPO_GITHUB_TOKEN }}
+    with:
+      additional-r-cmd-check-params: --as-cran
+      skip-r-cmd-install: true
+      # additional-env-vars: |
+      #   _R_CHECK_CRAN_INCOMING_REMOTE_=false
+      # enforce-note-blocklist: true
+      # note-blocklist: |
+      #   checking dependencies in R code .* NOTE
+      #   checking R code for possible problems .* NOTE
+      #   checking examples .* NOTE
+      #   checking Rd line widths .* NOTE
+      #   checking top-level files .* NOTE
+      # unit-test-report-brand: >-
+      #   https://raw.githubusercontent.com/insightsengineering/hex-stickers/main/thumbs/tern.png
   coverage:
     name: Coverage 📔
     needs: [release, docs]

@@ -4,29 +4,18 @@
 \name{stats4phc-package}
 \alias{stats4phc}
 \alias{stats4phc-package}
-\title{stats4phc: A package for Clinical Prediction Model Evaluation}
+\title{stats4phc: Performance evaluation for the prognostic value of predictive models intended to
+support personalized healthcare through predictiveness curves and positive / negative
+predictive values}
 \description{
-This package is used for performance evaluation for the clinical utility of biomarkers
-and models based on statistical methodology to achieve truly personalized healthcare.
-Evaluation is done, namely through the use of the predictiveness curve:
-a plot of risk on its percentiles.
-To this end, we employ a bevy of flexible estimation algorithms to create the predictiveness
-curve output, easily plotted via ggplot.
-}
-\details{
-Other useful plots provided in this package include: predictive value on risk percentile,
-positive fraction on risk percentile, and calibration plot
-(proportion of outcomes on risk, within quantiles).
-
-For binary outcome data, all that is required is a vector of binary outcomes,
-and a vector of numeric predicted risk scores (outputted from your favorite model).
-Survival data will be supported in the future.
-For more details, please refer to the Introduction to stats4phc vignette.
-
-This vignette deals with the first case: How to use
-\href{https://github.roche.com/Rpackages/stats4phc/tree/master/vignettes}{stats4phc}
-
 vignette("stats4phc.Rmd")
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://genentech.github.io/stats4phc}
+}
+
 }
 \author{
 \strong{Maintainer}: Ondrej Slama \email{ondrej.slama@roche.com}

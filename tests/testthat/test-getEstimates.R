@@ -85,44 +85,100 @@ test_that("getPAVAest returns estimates of correct dimensions", {
 })
 
 test_that("getGAMest returns estimates of correct dimensions", {
-  res <- getGAMest(outcome, rscore)
-  expect_equal(nrow(res), length(rscore))
-  expect_equal(ncol(res), 4)
-  expect_snapshot(res)
+  
+  res1 <- getGAMest(outcome, rscore)
+  expect_equal(nrow(res1), length(rscore))
+  expect_equal(ncol(res1), 4)
 
-  res <- getGAMest(outcome, rscore, fitonPerc = FALSE)
-  expect_snapshot(res)
+  res2 <- getGAMest(outcome, rscore, fitonPerc = FALSE)
+  res3 <- getGAMest(outcome, rscore, logscores = TRUE)
+  res4 <- getGAMest(outcome[rscore > 0], rscore[rscore > 0], logscores = TRUE, fitonPerc = FALSE)
 
-  res <- getGAMest(outcome, rscore, logscores = TRUE)
-  expect_snapshot(res)
+  expect_snapshot(res1)
+  expect_snapshot(res2)
+  expect_snapshot(res3)
+  expect_snapshot(res4)
 
-  res <- getGAMest(outcome[rscore > 0], rscore[rscore > 0], logscores = TRUE, fitonPerc = FALSE)
-  expect_snapshot(res)
 })
 
 test_that("getCGAMest works", {
-  res <- getCGAMest(outcome, rscore)
-  expect_equal(nrow(res), length(rscore))
-  expect_equal(ncol(res), 4)
-  expect_snapshot(res)
+  
+  res1 <- getCGAMest(outcome, rscore)
+  expect_equal(nrow(res1), length(rscore))
+  expect_equal(ncol(res1), 4)
 
-  res <- getCGAMest(outcome, rscore, fitonPerc = FALSE)
-  expect_snapshot(res)
+  res2 <- getCGAMest(outcome, rscore, fitonPerc = FALSE)
+  
+  expect_snapshot(res1)
+  expect_snapshot(res2)
 })
 
 
 test_that("getMSPLINEest returns estimates of correct dimensions", {
-  res <- getMSPLINEest(outcome, rscore)
-  expect_equal(nrow(res), length(rscore))
-  expect_equal(ncol(res), 4)
-  expect_snapshot(res)
+  
+  res1 <- getMSPLINEest(outcome, rscore)
+  
+  expect_equal(nrow(res1), length(rscore))
+  expect_equal(ncol(res1), 4)
 
-  res <- getMSPLINEest(outcome, rscore, fitonPerc = FALSE)
-  expect_snapshot(res)
+  res2 <- getMSPLINEest(outcome, rscore, fitonPerc = FALSE)
+  
+  expect_snapshot(res1)
+  expect_snapshot(res2)
 })
 
 
 test_that("getEsts returns estimates of correct dimensions and correct number of methods", {
+  
+  expect_error(
+    getEsts(
+      methods = list(my_est = function(outcome, score) {"dummy"}),
+      outcome = outcome,
+      score = rscore
+    ),
+    "data.frame of 4 columns"
+  )
+  
+  expect_error(
+    getEsts(
+      methods = list(my_est = function(outcome, score) {
+        data.frame(score = "a", percentile = "b", outcome = "c", estimate = 0)
+      }),
+      outcome = outcome,
+      score = rscore
+    ),
+    "not numeric"
+  )
+  
+  expect_error(
+    getEsts(methods = methodCheck("dummy"), outcome = outcome, score = score),
+    "is not yet available"
+  )
+  
+  expect_error(
+    getEsts(
+      methods = methodCheck(list(dummy = list(method = "dummy"))),
+      outcome = outcome, score = rscore
+    ),
+    "is not yet available"
+  )
+  
+  expect_error(
+    getEsts(
+      methods = methodCheck(list(user_gam = function(x) {})),
+      outcome = outcome, score = rscore
+    ),
+    "exactly two arguments"
+  )
+  
+  expect_error(
+    getEsts(
+      methods = methodCheck(list(asis1 = list(method = "asis"), asis2 = list(method = "asis"))),
+      outcome = outcome, score = rscore
+    ),
+    "just once"
+  )
+  
   res <- getEsts(methods = list(GAM = list(method = "gam")), outcome = outcome, score = rscore)
 
   expect_equal(nrow(res$plotdata), length(rscore))
@@ -195,54 +251,6 @@ test_that("getEsts returns estimates of correct dimensions and correct number of
   expect_equal(res$idx.binned, c("g" = F, "b" = T, "r" = F))
   expect_equal(res$idx.pava, c("g" = F, "b" = F, "r" = F))
 
-  expect_error(
-    getEsts(
-      methods = list(my_est = function(outcome, score) {"dummy"}),
-      outcome = outcome,
-      score = rscore
-    ),
-    "data.frame of 4 columns"
-  )
-  
-  expect_error(
-    getEsts(
-      methods = list(my_est = function(outcome, score) {
-        data.frame(score = "a", percentile = "b", outcome = "c", estimate = 0)
-      }),
-      outcome = outcome,
-      score = rscore
-    ),
-    "not numeric"
-  )
-
-  expect_error(
-    getEsts(methods = methodCheck("dummy"), outcome = outcome, score = score),
-    "is not yet available"
-  )
-  
-  expect_error(
-    getEsts(
-      methods = methodCheck(list(dummy = list(method = "dummy"))),
-      outcome = outcome, score = rscore
-    ),
-    "is not yet available"
-  )
-
-  expect_error(
-    getEsts(
-      methods = methodCheck(list(user_gam = function(x) {})),
-      outcome = outcome, score = rscore
-    ),
-    "exactly two arguments"
-  )
-
-  expect_error(
-    getEsts(
-      methods = methodCheck(list(asis1 = list(method = "asis"), asis2 = list(method = "asis"))),
-      outcome = outcome, score = rscore
-    ),
-    "just once"
-  )
 })
 
 test_that("asis method works in getEsts", {
@@ -300,6 +308,12 @@ test_that("getConstraints works", {
 
 
 test_that("summaryTable argument returns appropriately sized dataframe when requested.", {
+  
+  expect_error(
+    getSummaries(outcome, rscore, bins = numeric(0), quantiles = NULL),
+    "Unrecognized option"
+  )
+  
   expect_equal(nrow(getSummaries(outcome, rscore, quantiles = 10)$binlvl), 10)
   expect_equal(ncol(getSummaries(outcome, rscore, quantiles = 10)$binlvl), 9)
 
@@ -320,18 +334,14 @@ test_that("summaryTable argument returns appropriately sized dataframe when requ
   expect_snapshot(out$obslvl)
   expect_snapshot(as.data.frame(out$binlvl))
 
-  # test right
-  out <- getSummaries(outcome, rscore, bins = 8, right = FALSE)
-  expect_snapshot(out$obslvl)
-  expect_snapshot(as.data.frame(out$binlvl))
-
   # test bins - 2
   out <- getSummaries(outcome, rscore, bins = c(0, 0.4, 0.75, 1))
   expect_snapshot(out$obslvl)
   expect_snapshot(as.data.frame(out$binlvl))
 
-  expect_error(
-    getSummaries(outcome, rscore, bins = numeric(0), quantiles = NULL),
-    "Unrecognized option"
-  )
+  # test right
+  out <- getSummaries(outcome, rscore, bins = 8, right = FALSE)
+  expect_snapshot(out$obslvl)
+  expect_snapshot(as.data.frame(out$binlvl))
+
 })

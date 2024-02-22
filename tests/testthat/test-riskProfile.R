@@ -3,26 +3,21 @@ set.seed(3423)
 rscore <- rnorm(40, 0.5, 0.5)
 
 test_that("riskProfile works", {
+  
   out1 <- riskProfile(
     outcome = outcome,
     score = rscore,
     methods = c("MSPLINE", "GAM", "BINNED", "PAVA"),
     rev.order = FALSE
   )
-
-  expect_snapshot(as.data.frame(out1$data))
-  expect_null(out1$errorbar)
-
+  
   out2 <- riskProfile(
     outcome = outcome,
     score = rscore,
     methods = c("MSPLINE", "GAM", "BINNED", "PAVA"),
     rev.order = TRUE
   )
-
-  expect_snapshot(as.data.frame(out2$data))
-  expect_null(out2$errorbar)
-
+  
   out3 <- riskProfile(
     outcome = outcome,
     score = rscore,
@@ -30,10 +25,7 @@ test_that("riskProfile works", {
     rev.order = FALSE,
     prev.adj = 0.37
   )
-
-  expect_snapshot(as.data.frame(out3$data))
-  expect_null(out3$errorbar)
-
+  
   out4 <- riskProfile(
     outcome = outcome,
     score = rscore,
@@ -42,6 +34,15 @@ test_that("riskProfile works", {
     show.nonparam.pv = FALSE,
     include = c("PPV", "NPV", "1-NPV")
   )
+  
+  expect_snapshot(as.data.frame(out1$data))
+  expect_null(out1$errorbar)
+
+  expect_snapshot(as.data.frame(out2$data))
+  expect_null(out2$errorbar)
+
+  expect_snapshot(as.data.frame(out3$data))
+  expect_null(out3$errorbar)
 
   expect_equal(nrow(out4$data), 246)
   expect_null(out4$errorbar)

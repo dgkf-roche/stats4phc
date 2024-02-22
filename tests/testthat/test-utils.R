@@ -4,34 +4,37 @@ rscore <- rnorm(40, 0.5, 0.5)
 
 
 test_that("inputCheck works", {
+  
+  expect_error(inputCheck(c(1, 0, 1), c("a", "b", "c")), "numeric")
+  expect_error(inputCheck(c("a", "b"), c(0.1, 0.2)), "numeric")
+  expect_error(inputCheck(c(0, 1, 0), c(0.1, 0.2)), "same lengths")
+  expect_error(inputCheck(c(1, 0), c(0.1, 0.2)), "observations")
+
+  res <- suppressWarnings(inputCheck(c(1, 0, 1, NA, 0), c(0.1, NA, 0.2, 0.3, 0.4)))
+  expect_equal(res, list(outcome = c(1, 1, 0), score = c(0.1, 0.2, 0.4)))
+
+  res <- suppressWarnings(inputCheck(c(1, 0, 1, NA, 0), c(0.1, NA, 0.2, 0.3, 0.4)))
+  expect_equal(res, list(outcome = c(1, 1, 0), score = c(0.1, 0.2, 0.4)))
+  
+  expect_error(inputCheck(c(1, 0, 2), c(0.1, 0.2, 0.3)), "as binary")
+  
+  expect_warning(
+    inputCheck(c(1, rep(0, 49)), 1:50),
+    "There is a low frequency"
+  )
+  
   res <- inputCheck(outcome, rscore)
 
   expect_equal(length(res$outcome), length(res$score))
   expect_snapshot(res)
   expect_equal(is.numeric(res$outcome), TRUE)
   expect_equal(is.numeric(res$score), TRUE)
-  expect_error(inputCheck(outcome = c(1, 0), score = c(0.1, 0.2)), "observations")
-
-  res <- suppressWarnings(inputCheck(c(1, 0, 1, NA, 0), c(0.1, NA, 0.2, 0.3, 0.4)))
-  expect_equal(res, list(outcome = c(1, 1, 0), score = c(0.1, 0.2, 0.4)))
-
-  res <- suppressWarnings(inputCheck(c(1, 0, 1, NA, 0), c(0.1, NA, 0.2, 0.3, 0.4)))
-  expect_equal(res, list(outcome = c(1, 1, 0), score = c(0.1, 0.2, 0.4)))
 
   expect_equal(
     inputCheck(rep(c(TRUE, FALSE), 5), 1:10 / 10),
     list(outcome = as.numeric(rep(c(TRUE, FALSE), 5)), score = 1:10 / 10)
   )
 
-  expect_error(inputCheck(c(1, 0, 2), c(0.1, 0.2, 0.3)), "as binary")
-  expect_error(inputCheck(c(1, 0, 1), c("a", "b", "c")), "numeric")
-  expect_error(inputCheck(c("a", "b"), c(0.1, 0.2)), "numeric")
-  expect_error(inputCheck(c(0, 1, 0), c(0.1, 0.2)), "same lengths")
-  expect_warning(
-    inputCheck(c(1, rep(0, 49)), 1:50),
-    "There is a low frequency"
-  )
-  
   rscore[1] <- NA
   expect_warning(inputCheck(outcome, rscore))
 })
@@ -78,6 +81,8 @@ test_that("methods returns appropriate length list of lists", {
     methodCheck(list(m1 = list(method = NULL))),
     "specifying one of the predefined estimation functions"
   )
+  
+  expect_error(methodCheck(c("gamm")), "not yet available")
 })
 
 
@@ -138,6 +143,10 @@ test_that("add0thPercPV works", {
 })
 
 
-# test_that("save_png works", {
-#   expect_type(save_png(plot(mtcars$hp ~ mtcars$mpg)), "character")
-# })
+test_that("listMethodCheck works", {
+  
+  expect_error(listMethodCheck(list(method = "my_method")), "not yet available")
+  
+  expect_error(listMethodCheck(function(x) {x}), "exactly two arguments")
+  
+})

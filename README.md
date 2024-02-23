@@ -41,8 +41,7 @@ where you can see function reference as well as introduction vignette.
 
 ## Example
 
-This is a basic example which demonstrates one of the plotting functions from the package, 
-`riskProfile`:
+This is a basic example which demonstrates `riskProfile` function (i.e. Predictiveness Curve):
 
 ``` r
 library(stats4phc)
@@ -54,17 +53,19 @@ truth <- as.numeric(auroc$actual)
 
 # Default plot includes 1-NPV, PPV, and a predictiveness curve (PC) 
 p1 <- riskProfile(outcome = truth, score = rscore)
-# p1 is a list with "plot" and "data" elements, see `p1$plot` or `p1$data`
-
-# You can select an estimation method with specific arguments
-p2 <- riskProfile(
-  outcome = truth,
-  score = rscore,
-  methods = list(
-    "gam" = list(method = "gam", bs = "tp", k = 5, logscores = FALSE, fitonPerc = TRUE),
-    "asis" = list(method = "asis"), # no arguments for this method
-    "bin" = list(method = "binned", quantiles = 10, errorbar.sem = 1)
-  )
-)
-# see `p2$plot` or `p2$data`
+p1$plot
+# You can also access the underlying data with `p1$data`
 ```
+
+![](man/figures/readme_p1.png)
+
+<br/>
+
+and `sensSpec` function (Sensitivity and Specificity Plot):
+
+```r
+p2 <- sensSpec(outcome = truth, score = rscore)
+p2$plot
+```
+
+![](man/figures/readme_p2.png)

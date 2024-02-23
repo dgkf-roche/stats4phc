@@ -24,8 +24,15 @@ and plotting of these performance evaluation curves and metrics.
 ## Installation
 
 ``` r
-remotes::install_github(repo = "Genentech/stats4phc")
+remotes::install_github(repo = "genentech/stats4phc")
 ```
+
+For reproducibility, refer to a specific version tag, for example
+
+``` r
+remotes::install_github(repo = "genentech/stats4phc", ref = "v0.1")
+```
+
 
 ## Documentation
 

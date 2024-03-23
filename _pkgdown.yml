@@ -23,9 +23,9 @@ navbar:
       text: Reports
       menu:
         - text: Coverage report
-          href: coverage-report/
+          href: ../coverage-report/
         - text: Unit test report
-          href: unit-test-report/
+          href: ../unit-test-report/
     github:
       icon: fab fa-github fa-lg
       href: https://www.github.com/genentech/stats4phc

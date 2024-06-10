@@ -21,22 +21,37 @@ This package provides functions for performance evaluation for the prognostic va
 -   Calibration
 -   Sensitivity and specificity
 
-To begin with, let's align on terminology.
+The intention is not to replace standard metrics evaluation (like Brier score, log-loss, or AUC). 
+On the contrary, the mentioned quantities should be checked in addition in order to get the overall sense of model behaviour.
+
 
 
 ## Terminology
 
+To begin with, let's align on terminology.
 Below we define the terms that will be used across the article:
 
 -   outcome: the true observation of the quantity of interest;
 
--   score:
+-   score / risk:
 
     -   either a raw value (e.g. a biomarker) for the purpose of measuring (or approximating) the outcome,
 
-    -   or a prediction score given by a predictive model, where the outcome was modeled as the response;
+    -   or a probability given by a predictive model, where the outcome was modeled as the response;
 
 -   estimate: output of a statistical methodology, where score is used as independent variable and outcome as a dependent variable.
+
+
+Let's now load the package and the example data.
+
+```{r}
+library(stats4phc)
+
+# Read in example data
+auroc <- read.csv(system.file("extdata", "sample.csv", package = "stats4phc"))
+rscore <- auroc$predicted_calibrated  # vector of already calibrated model probabilities
+truth <- as.numeric(auroc$actual)     # vector of 0s or 1s
+```
 
 
 # Predictiveness curves
@@ -45,53 +60,66 @@ Predictiveness curves are an insightful visualization to assess the inherent abi
 
 You can use `riskProfile` function to visualize and assess all these quantities.
 
-Here is an example:
+Note that method "asis" (below on the graphs) means that the score (or model probabilities in our case) are taken as is, 
+i.e. there is no estimation or smoothing. 
 
-```{r}
-library(stats4phc)
 
-# Read in example data
-auroc <- read.csv(system.file("extdata", "sample.csv", package = "stats4phc"))
-rscore <- auroc$predicted_calibrated
-truth <- as.numeric(auroc$actual)
-```
+## Predictiveness curve
+
+Let's start with predictiveness curve:
 
 ```{r fig.height=5, fig.width=8}
-p <- riskProfile(outcome = truth, score = rscore)
+p <- riskProfile(outcome = truth, score = rscore, include = "PC")
 p$plot
 ```
 
+Ideally, all subjects in the population that have the condition (=> prevalence) are marked as having the condition (predicted risk = 1) and all subjects without the condition (=> 1 - prevalence) are marked as not having the condition (predicted risk = 0).
+This implies that the ideal predictiveness curve is 0 for all subjects not having the condition, 
+and then it steps (jumps) at `1 - prevalence` to 1 for all the subjects having the condition (see the gray line). 
+
+In reality, the curves are not step functions. The more flat the curves get, the less discrimination, and therefore utility, there is in the model.
+
+One can also investigate the tails of predictiveness curve. The model is more useful if these regions have very low or very high predicted risks relatively to the rest of the data.
+
+
+## Positive / Negative predictive values
+
+Now let's plot PPV and 1-NPV:
+
+```{r fig.height=5, fig.width=8}
+p <- riskProfile(outcome = truth, score = rscore, include = c("PPV", "1-NPV"))
+p$plot
+```
+
+Again, in an ideal case, they both are as close to the gray lines as possible.
+
+In an ideal scenario:
+
+- in terms of PPV: If all the subjects with the condition are predicted perfectly, then PPV = TP / PP = 1 (TP = true positive, PP = predicted positive). 
+Hence, all the subjects with the condition must be higher than `1 - prevalence` on the prediction percentile for PPV = 1. 
+
+- in terms of 1-NPV: If all the subjects without the condition are predicted perfectly, then NPV = TN / PN = 1 (TN = true negative, PN = predicted negative). 
+Hence, all the subjects without the condition must be lower than `1 - prevalence` on the risk percentile for 1-NPV = 0.
+
+
+## Output settings
+
+Note that:
+
+- most importantly, in case of a biomarker or if the model probabilities are not calibrated well, you can use a smoother, see `methods` argument and the last section of the vignette.
+
+- the prevalence can be adjusted by setting it in `prev.adj`. 
+
+- you can also plot "NPV" by adjusting the `include` parameter.
+
+- you can also access the underlying data:
+
 ```{r}
+p <- riskProfile(outcome = truth, score = rscore, include = c("PPV", "1-NPV"))
 head(p$data)
 ```
 
-There is an extensive documentation of this function with examples if you run `?riskProfile`.
 
-To briefly highlight the functionalities:
-
--   Use the `methods` argument to specify the desired estimation method (see the last section) or use `"asis"` for no estimation.
-
--   You can adjust the prevalence by setting `prev.adj` to the desired amount.
-
--   `show.nonparam.pv` controls whether to show/hide the non-parametric estimation of PPV, 1-NPV, and NPV.
-
--   `show.best.pv` controls whether to show/hide the theoretically best possible PPV, 1-NPV, NPV.
-
--   Use `include` argument to specify what quantities to show:
-
-    -   PC = predictiveness curve
-
-    -   PPV = positive predictive value
-
-    -   NPV = negative predictive value
-
-    -   1-NPV = 1 - negative predictive value
-
--   `plot.raw` sets whether to plot raw values or percentiles.
-
--   `rev.order` sets whether to reverse the order of the score (useful if higher score refers to lower outcome).
-
--   The output is the plot itself and the underlying data.
 
 # Calibration
 
@@ -104,37 +132,41 @@ p <- calibrationProfile(outcome = truth, score = rscore)
 p$plot
 ```
 
-```{r}
-head(p$data)
-```
+In an ideal scenario, the fitted curves should be identical with the identity line. 
 
-There is an extensive documentation of this function with examples if you run `?calibrationProfile`.
+In reality, the closer they are to the identity line, the better. 
 
-To briefly highlight the functionalities:
+Note that you can also quantify calibration through discrimination and miscalibration index, 
+see this [blog post](https://stats4datascience.com/posts/three_metrics_binary/) 
+and [modsculpt](https://github.com/Genentech/modsculpt)
+R package (metrics functions).
 
--   Use the `methods` argument to specify the desired estimation method (see the last section). In this case, `"asis"` is not allowed.
 
--   Use `include` argument to specify what additional quantities to show:
+## Output settings
 
-    -   `"loess"`: Adds non-parametric Loess fit.
+Note that:
 
-    -   `"citl"`: Adds "Calibration in the Large", an overall mean of outcome and score.
+- in case of a biomarker or if the model probabilities are not calibrated well, you can use a smoother, see `methods` argument and the last section of the vignette. In this case, `"asis"` is not allowed.
 
-    -   `"rug"`: Adds "rug", i.e. ticks on x-axis showing the individual data points (top axis shows score for outcome == 1, bottom axis shows score for outcome == 0).
+- use `include` argument to specify what additional quantities to show:
 
-    -   `"datapoints"`: Similar to rug, just shows jittered points instead of ticks.
+  - `"loess"`: Adds non-parametric Loess fit.
 
--   `plot.raw` sets whether to plot raw values or percentiles.
+  - `"citl"`: Adds "Calibration in the Large", an overall mean of outcome and score.
 
--   `rev.order` sets whether to reverse the order of the score (useful if higher score refers to lower outcome).
+  - `"rug"`: Adds "rug", i.e. ticks on x-axis showing the individual data points (top axis shows score for outcome == 1, bottom axis shows score for outcome == 0).
 
--   Use `margin.type` to add a marginal plot through `ggExtra::ggMarginal`. You can select one of `c("density", "histogram", "boxplot", "violin", "densigram")`. It adds the selected 1d graph on top of the calibrtion plot and is suitable for investigating the score.
+  - `"datapoints"`: Similar to rug, just shows jittered points instead of ticks.
 
--   The output is the plot itself and the underlying data.
+- use `margin.type` to add a marginal plot through `ggExtra::ggMarginal`. You can select one of `c("density", "histogram", "boxplot", "violin", "densigram")`. It adds the selected 1d graph on top of the calibrtion plot and is suitable for investigating the score.
+
+- you can again access the underlying data with `p$data`.
+
+
 
 # Sensitivity and specificity
 
-Ultimately, we provide a sensitivity and specificity plot. For these quantities you need to define a cutoff with which you can trasnform the numeric score to binary. We use data-driven cutoffs, meaning that every single value of score is taken as the cutoff, allowing us to visualize the sensitivity and specificity as a function of score. This graph may inform you of the best suitable cutoff for your model, although we usually recommend to output the whole score range, not just the binary decisions.
+Ultimately, we provide a sensitivity and specificity plot as a function of score (threshold is data-driven). This graph may inform you of the best suitable cutoff for your model, although we usually recommend to output the whole score range, not just the binary decisions.
 
 You can use `sensSpec` function to visualize and assess sensitivity and specificity.
 
@@ -143,21 +175,19 @@ p <- sensSpec(outcome = truth, score = rscore)
 p$plot
 ```
 
-```{r}
-head(p$data)
-```
+Again, the ideal scenario would be having a model following the gray lines.
+Since there is a trade-off between sensitivity and specificity, the graph may guide you which threshold (or thresholds) to choose, depending if one is more important than the other.
 
-There is an extensive documentation of this function with examples if you run `?sensSpec`.
 
-To briefly highlight the functionalities:
+## Output settings
 
--   Use the `methods` argument to specify the desired estimation method (see the last section) or use `"asis"` for no estimation.
+Note that:
 
--   `show.best` controls whether to show/hide the theoretically best possible sensitivity and specificity.
+- in case of a biomarker or if the model probabilities are not calibrated well, you can use a smoother, see `methods` argument and the last section of the vignette. 
 
--   `plot.raw` sets whether to plot raw values or percentiles.
+- you can again access the underlying data with `p$data`.
 
--   `rev.order` sets whether to reverse the order of the score (useful if higher score refers to lower outcome).
+
 
 # Adjusting the graphs
 
@@ -187,6 +217,7 @@ p$plot +
 ```
 
 Otherwise, you can use the `$data` element to construct your own graph as well.
+
 
 # Estimations in stats4phc
 

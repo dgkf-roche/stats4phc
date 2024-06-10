@@ -24,6 +24,7 @@ Authors:
 \itemize{
   \item Darrick Shen \email{shend9@gene.com}
   \item Verena Steffen \email{steffen.verena@gene.com}
+  \item Doug Kelkhoff \email{doug.kelkhoff@roche.com}
   \item Michel Friesenhahn \email{friesem1@gene.com}
   \item Christina Rabe \email{rabec@gene.com}
 }

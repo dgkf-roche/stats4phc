@@ -116,12 +116,13 @@ predictionColours <- function(x, show.best) {
     "NPV" = "#53B400",
     "Best PPV" = "gray65",
     "PPV" = "red",
+    "Best PC" = "black",
     "PC" = "plum",
     "1-NPV" = "royalblue2",
     "Best 1-NPV" = "gray50"
   )
   if (show.best) {
-    x <- c(x, paste("Best", setdiff(x, "PC")))
+    x <- c(x, paste("Best", x))
   }
   return(clrs[names(clrs) %in% x]) # keep the ordering above
 }

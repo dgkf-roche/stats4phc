@@ -386,12 +386,13 @@ riskProfile <- function(outcome,
       distinct() %>%
       arrange(.data$percentile, .data$score) %>%
       mutate(
+        PC = ifelse(.data$percentile <= 1 - prev, 0, 1),
         PPV = bestPPV(perc = .data$percentile, prev = prev),
         `1-NPV` = bestMNPV(perc = .data$percentile, prev = prev),
         NPV = 1 - .data$`1-NPV`
       ) %>%
       tidyr::pivot_longer(
-        cols = c("PPV", "1-NPV", "NPV"), names_to = "pv", values_to = "pvValue"
+        cols = c("PC", "PPV", "1-NPV", "NPV"), names_to = "pv", values_to = "pvValue"
       ) %>%
       filter(.data$pv %in% include) %>%
       mutate(
@@ -404,10 +405,10 @@ riskProfile <- function(outcome,
         geom_line(
           data = best,
           aes(x = .data[[xvar]], y = .data$pvValue, linewidth = .data$pv),
-          colour = "gray70"
+          colour = "gray60"
         ) +
         scale_linewidth_manual(
-          values = c("Best 1-NPV" = 0.3, "Best PPV" = 0.3, "Best NPV" = 0.3),
+          values = c("Best 1-NPV" = 0.3, "Best PPV" = 0.3, "Best PC" = 0.3, "Best NPV" = 0.3),
           name = "Best PVs"
         )
     } else {

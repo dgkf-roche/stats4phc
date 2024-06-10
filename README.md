@@ -41,7 +41,7 @@ where you can see function reference as well as introduction vignette.
 
 ## Example
 
-This is a basic example which demonstrates `riskProfile` function (i.e. Predictiveness Curve):
+This is a basic example which demonstrates `riskProfile` function (i.e. Predictiveness curve):
 
 ``` r
 library(stats4phc)
@@ -51,8 +51,8 @@ auroc <- read.csv(system.file("extdata", "sample.csv", package = "stats4phc"))
 rscore <- auroc$predicted_calibrated
 truth <- as.numeric(auroc$actual)
 
-# Default plot includes 1-NPV, PPV, and a predictiveness curve (PC) 
-p1 <- riskProfile(outcome = truth, score = rscore)
+# For clarity, show just PPV and 1-NPV. Or display Predictiveness curve by using "PC"
+p1 <- riskProfile(outcome = truth, score = rscore, include = c("PPV", "1-NPV"))
 p1$plot
 # You can also access the underlying data with `p1$data`
 ```

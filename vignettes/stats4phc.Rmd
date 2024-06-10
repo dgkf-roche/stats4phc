@@ -73,7 +73,7 @@ p <- riskProfile(outcome = truth, score = rscore, include = "PC")
 p$plot
 ```
 
-Ideally, all subjects in the population that have the condition (=> prevalence) are marked as having the condition (predicted risk = 1) and all subjects without the condition (=> 1 - prevalence) are marked as not having the condition (predicted risk = 0).
+In an ideal scenario, all subjects in the population that have the condition (=> prevalence) are marked as having the condition (predicted risk = 1) and all subjects without the condition (=> 1 - prevalence) are marked as not having the condition (predicted risk = 0).
 This implies that the ideal predictiveness curve is 0 for all subjects not having the condition, 
 and then it steps (jumps) at `1 - prevalence` to 1 for all the subjects having the condition (see the gray line). 
 
@@ -96,10 +96,10 @@ Again, in an ideal case, they both are as close to the gray lines as possible.
 In an ideal scenario:
 
 - in terms of PPV: If all the subjects with the condition are predicted perfectly, then PPV = TP / PP = 1 (TP = true positive, PP = predicted positive). 
-Hence, all the subjects with the condition must be higher than `1 - prevalence` on the prediction percentile for PPV = 1. 
+Hence, PPV = 1 at the score percentile greater or equal to `1 - prevalence` (these scores refer to the subjects with the condition).
 
 - in terms of 1-NPV: If all the subjects without the condition are predicted perfectly, then NPV = TN / PN = 1 (TN = true negative, PN = predicted negative). 
-Hence, all the subjects without the condition must be lower than `1 - prevalence` on the risk percentile for 1-NPV = 0.
+Hence, 1-NPV = 0 at the score percentile lower or equal to `1 - prevalence` (these scores refer to the subjects without the condition).
 
 
 ## Output settings

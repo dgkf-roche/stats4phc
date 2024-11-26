@@ -258,7 +258,12 @@ riskProfile <- function(outcome,
 
   # Predictive Value Data
   if (show.pv) {
-    PV.data <- getPVdata(outcome = outcome, score = score, methods = methods, pc.ests = pc.ests)
+    PV.data <- getPVdata(
+      outcome = outcome,
+      score = score,
+      methods = methods,
+      pc.ests = pc.ests
+    )
   } else {
     PV.data <- data.frame(
       method = character(0), score = numeric(0), percentile = numeric(0),
